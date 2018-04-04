@@ -21,7 +21,7 @@ typedef struct _AX12 {
 	uint16_t timeoutMs;
 } AX12;
 
-void AX12_InitAll(uint16_t canId);
+void AX12_InitAll();
 bool AX12_OnMessage(can_t* canMsg);
 void AX12_UpdateAll(void);
 #endif

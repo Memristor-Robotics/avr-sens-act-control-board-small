@@ -3,17 +3,17 @@
 static BinarySensor instances[BINARY_SENSOR_CONFIG_MAX];
 static uint8_t instancesCount = 0;
 
-void BinarySensor_Add(Pin* pin, uint16_t canId) {
+void BinarySensor_Add(Pin* pin, uint8_t number) {
 	uint8_t index = instancesCount;
-	
+
 	// Set mode
     Pin_SetMode(pin, PIN_INPUT);
 
     // Initialize values
-    instances[index].canId = canId;
+    instances[index].canId = BINARY_SENSOR_CANID + number;
     instances[index].pin = pin;
     instances[index].state = 0;
-    
+
     // Return index
     instancesCount++;
 }

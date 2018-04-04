@@ -1,11 +1,12 @@
-#define F_CPU 16000000UL
-
 #include <avr/io.h>
 #include <util/delay.h>
+#include <stdbool.h>
+#include "Config.h"
+#include "Pin.h"
+#include "BinarySensor.h"
 #include "CanBus.h"
 #include "Uart.h"
-#include "Pin.h"
-#include "Config.h"
+#include "AX12.h"
 
 
 int main() {
@@ -20,15 +21,18 @@ int main() {
 
 	sei();
 
-	/*	Binary Sensors Initialisation	*/
-	// BinarySensor_Add(_pin_, 1);
-	// BinarySensor_Add(_pin_, 2);
-	// BinarySensor_Add(_pin_, 3);
-	// BinarySensor_Add(_pin_, 4);
-	// BinarySensor_Add(_pin_, 5);
+	/*	AX12 Servos Initialisation	*/
+	AX12_InitAll();
+
+	/*	Binary Sensors Initalisation	*/
+	BinarySensor_Add(&Pin_C6, 1);
+	BinarySensor_Add(&Pin_C7, 2);
+	BinarySensor_Add(&Pin_A7, 3);
+
 
 	/* Brushless EDF Initialisation on pin */
 	Brushless_Init(&Pin_B5);
+
 
 	/* CANbus Initialisation */
 	CANbus_Init();
@@ -41,7 +45,7 @@ int main() {
 
   while(1) {
 
-		can_wrapper_send(0x00006C00, 1, 0xFF);
+		BinarySensor_UpdateAll();
 
 		if (can_check_message()) {
 			can_t msg;
@@ -49,6 +53,7 @@ int main() {
 			if (can_get_message(&msg)) {
 
 				Brushless_Update(&msg);
+				if(AX12_OnMessage(&msg) == true) continue;
 
 			}
 		}

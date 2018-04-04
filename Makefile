@@ -59,9 +59,10 @@ MCU = at90can128
 #         F_CPU =  8000000
 #         F_CPU = 11059200
 #         F_CPU = 14745600
-F_CPU = 16000000
+#         F_CPU = 16000000
 #         F_CPU = 18432000
 #         F_CPU = 20000000
+F_CPU =  16000000
 
 
 # Output format. (can be srec, ihex, binary)
@@ -79,12 +80,14 @@ OBJDIR = build
 
 
 # List C source files here. (C dependencies are automatically generated.)
+SRC = ./src/Utils.c ./src/Pin.c ./src/main.c ./src/BinarySensor.c ./src/AX12.c ./src/PwmBrushless.c ./src/Uart.c ./src/CanBus.c
+# Libs here
+SRC += ./libs/can/can_wrapper.c ./libs/dynamixel/dynamixel.c
 
-SRC = ./src/main.c ./src/Uart.c ./src/Pin.c ./src/Utils.c ./src/CanBus.c ./src/PwmBrushless.c
+# Dirs where .o files will be stored
+BUILD_DIRS = ./build/src ./build/libs/can ./build/libs/dynamixel
 
-SRC += ./libs/can/can_wrapper.c ./libs/can/libcan.a
 
-BUILD_DIRS = ./build/src ./build/libs/can
 # List C++ source files here. (C dependencies are automatically generated.)
 CPPSRC =
 
@@ -184,7 +187,7 @@ CPPFLAGS += -fpack-struct
 CPPFLAGS += -fshort-enums
 CPPFLAGS += -fno-exceptions
 CPPFLAGS += -Wall
-CPPFLAGS += -Wundef
+CFLAGS += -Wundef
 #CPPFLAGS += -mshort-calls
 #CPPFLAGS += -fno-unit-at-a-time
 #CPPFLAGS += -Wstrict-prototypes
@@ -239,7 +242,7 @@ MATH_LIB = -lm
 #     Each directory must be seperated by a space.
 #     Use forward slashes for directory separators.
 #     For a directory that has spaces, enclose it in quotes.
-EXTRALIBDIRS =
+EXTRALIBDIRS = ./libs/can
 
 
 
@@ -265,20 +268,23 @@ LDFLAGS = -Wl,-Map=$(TARGET).map,--cref
 LDFLAGS += $(EXTMEMOPTS)
 LDFLAGS += $(patsubst %,-L%,$(EXTRALIBDIRS))
 LDFLAGS += $(PRINTF_LIB) $(SCANF_LIB) $(MATH_LIB)
+LDFLAGS += -L. -lcan
 #LDFLAGS += -T linker_script.x
 
 
 
 #---------------- Programming Options (avrdude) ----------------
 
-# Programming hardware
+# Programming hardware: alf avr910 avrisp bascom bsd
+# dt006 pavr picoweb pony-stk200 sp12 stk200 stk500
+#
 # Type: avrdude -c ?
 # to get a full listing.
 #
 AVRDUDE_PROGRAMMER = usbasp
 
 # com1 = serial port. Use lpt1 to connect to parallel port.
-AVRDUDE_PORT = com1
+AVRDUDE_PORT = com1    # programmer connected to serial device
 
 AVRDUDE_WRITE_FLASH = -U flash:w:$(TARGET).hex
 #AVRDUDE_WRITE_EEPROM = -U eeprom:w:$(TARGET).eep
@@ -509,7 +515,7 @@ extcoff: $(TARGET).elf
 %.hex: %.elf
 	@echo
 	@echo $(MSG_FLASH) $@
-	$(OBJCOPY) -O $(FORMAT) -R .eeprom -R .fuse -R .lock $< $@
+	$(OBJCOPY) -O $(FORMAT) -R .eeprom $< $@
 
 %.eep: %.elf
 	@echo
@@ -521,7 +527,7 @@ extcoff: $(TARGET).elf
 %.lss: %.elf
 	@echo
 	@echo $(MSG_EXTENDED_LISTING) $@
-	$(OBJDUMP) -h -S -z $< > $@
+	$(OBJDUMP) -h -S $< > $@
 
 # Create a symbol table from ELF output file.
 %.sym: %.elf
@@ -604,6 +610,7 @@ clean_list :
 	$(REMOVE) $(SRC:.c=.d)
 	$(REMOVE) $(SRC:.c=.i)
 	$(REMOVEDIR) .dep
+	$(REMOVEDIR) $(OBJDIR)
 
 
 # Create object files directory

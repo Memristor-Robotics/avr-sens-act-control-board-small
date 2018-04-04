@@ -23,8 +23,8 @@ typedef struct _BinarySensor {
 /**
  * Instance a new binary sensor and put it to binary sensor collection.
  * @example uint8_t sensorId = BinarySensor_Add(&PinC6, 0x8000);
- */ 
-void BinarySensor_Add(Pin* pin, uint16_t canId);
+ */
+void BinarySensor_Add(Pin* pin, uint8_t number);
 
 /**
  * Check state of all binary sensors. Call this function in loop.
