@@ -45,7 +45,7 @@ void PWM_SetDuty(uint16_t promil) {
 void Brushless_Update(can_t* canMsg) {
 
   size_t i = 0;
-  
+
   if(canMsg->id == BRUSHLESS_CANID) {
 
     uint8_t speed = canMsg->data[0];
@@ -53,12 +53,12 @@ void Brushless_Update(can_t* canMsg) {
     if(speed > CurrentSpeed) {
       for(i = CurrentSpeed; i < speed; i++) {
           PWM_SetDuty((uint16_t)(50 + (50.0 / 255.0) * i + 0.5));
-          _delay_ms(10);
+          _delay_ms(20);
         }
     } else if(speed < CurrentSpeed) {
       for(i = CurrentSpeed; i > speed; i--) {
         PWM_SetDuty((uint16_t)(50 + (50.0 / 255) * i));
-        _delay_ms(10);
+        _delay_ms(20);
       }
     } else {
       PWM_SetDuty((uint16_t)(50 + (50.0 / 255) * speed));

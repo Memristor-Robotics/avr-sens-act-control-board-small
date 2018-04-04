@@ -20,15 +20,18 @@ int main() {
 
 	sei();
 
+	/*	Binary Sensors Initialisation	*/
+	// BinarySensor_Add(_pin_, 1);
+	// BinarySensor_Add(_pin_, 2);
+	// BinarySensor_Add(_pin_, 3);
+	// BinarySensor_Add(_pin_, 4);
+	// BinarySensor_Add(_pin_, 5);
+
+	/* Brushless EDF Initialisation on pin */
+	Brushless_Init(&Pin_B5);
+
 	/* CANbus Initialisation */
 	CANbus_Init();
-
-
-	//Init_Pumps();
-
-	//Init_Vacuume_Switches();
-	/* Brushless EDF Initialisation on pin */
-	//Brushless_Init(&Pin_B5);
 
 
 #ifdef DEBUG
@@ -38,14 +41,14 @@ int main() {
 
   while(1) {
 
-
+		can_wrapper_send(0x00006C00, 1, 0xFF);
 
 		if (can_check_message()) {
 			can_t msg;
 
 			if (can_get_message(&msg)) {
 
-				//SingleVacuumPump_OnMessage(&msg);
+				Brushless_Update(&msg);
 
 			}
 		}
