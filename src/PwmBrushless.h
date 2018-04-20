@@ -6,6 +6,7 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <util/delay.h>
+#include <stdbool.h>
 #include "CanBus.h"
 #include "Pin.h"
 #include "Config.h"
@@ -14,6 +15,6 @@ void Brushless_Calibration(void);
 
 void Brushless_Init(Pin* pin);
 
-void Brushless_Update(can_t* canMsg);
+bool Brushless_OnMessage(can_t* canMsg);
 
 #endif

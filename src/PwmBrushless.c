@@ -1,5 +1,7 @@
 #include "PwmBrushless.h"
 
+#define BRUSHLESS_ACC_COEF 20
+
 static void PWM_SetDuty(uint16_t promil);
 
 static uint8_t CurrentSpeed = 0;
@@ -22,7 +24,7 @@ void Brushless_Init(Pin* pin) {
   *(pin->timer->ICRn) = MAX_OCR;
 
   PWM_SetDuty(50);
-  _delay_ms(5000);
+  
 
 }
 
@@ -42,7 +44,7 @@ void PWM_SetDuty(uint16_t promil) {
 }
 
 // speed (50 pr - 100 pr)
-void Brushless_Update(can_t* canMsg) {
+bool Brushless_OnMessage(can_t* canMsg) {
 
   size_t i = 0;
 
@@ -53,17 +55,21 @@ void Brushless_Update(can_t* canMsg) {
     if(speed > CurrentSpeed) {
       for(i = CurrentSpeed; i < speed; i++) {
           PWM_SetDuty((uint16_t)(50 + (50.0 / 255.0) * i + 0.5));
-          _delay_ms(20);
+          _delay_ms(BRUSHLESS_ACC_COEF);
         }
     } else if(speed < CurrentSpeed) {
       for(i = CurrentSpeed; i > speed; i--) {
         PWM_SetDuty((uint16_t)(50 + (50.0 / 255) * i));
-        _delay_ms(20);
+        _delay_ms(BRUSHLESS_ACC_COEF);
       }
     } else {
       PWM_SetDuty((uint16_t)(50 + (50.0 / 255) * speed));
     }
 
-  CurrentSpeed = speed;
+    CurrentSpeed = speed;
+
+    return true;
   }
+
+  return false;
 }

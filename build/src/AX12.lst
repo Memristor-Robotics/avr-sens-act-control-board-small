@@ -1,0 +1,310 @@
+   1               		.file	"AX12.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__RAMPZ__ = 0x3b
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   8               		.text
+   9               	.Ltext0:
+  10               		.cfi_sections	.debug_frame
+  11               	.global	AX12_UpdateAll
+  13               	AX12_UpdateAll:
+  14               	.LFB7:
+  15               		.file 1 "src/AX12.c"
+   1:src/AX12.c    **** #include "AX12.h"
+   2:src/AX12.c    **** 
+   3:src/AX12.c    **** #include <math.h>
+   4:src/AX12.c    **** #include <stdlib.h>
+   5:src/AX12.c    **** #include <string.h>
+   6:src/AX12.c    **** #include <can/can_wrapper.h>
+   7:src/AX12.c    **** #include <dynamixel/dynamixel.h>
+   8:src/AX12.c    **** #include "Utils.h"
+   9:src/AX12.c    **** 
+  10:src/AX12.c    **** static uint64_t lastUpdate = 0;
+  11:src/AX12.c    **** 
+  12:src/AX12.c    **** // Should be imported to custom structure to do not check all AX12 in loop
+  13:src/AX12.c    **** static AX12 positionUpdateQueue[AX12_CONFIG_QUEUE_MAX];
+  14:src/AX12.c    **** static uint8_t positionUpdateQueueCount = 0;
+  15:src/AX12.c    **** 
+  16:src/AX12.c    **** static size_t i;
+  17:src/AX12.c    **** 
+  18:src/AX12.c    **** void AX12_UpdateAll(void) {
+  16               		.loc 1 18 0
+  17               		.cfi_startproc
+  18               	/* prologue: function */
+  19               	/* frame size = 0 */
+  20               	/* stack size = 0 */
+  21               	.L__stack_usage = 0
+  22 0000 0895      		ret
+  23               		.cfi_endproc
+  24               	.LFE7:
+  26               	.global	AX12_InitAll
+  28               	AX12_InitAll:
+  29               	.LFB8:
+  19:src/AX12.c    **** 	/*
+  20:src/AX12.c    **** 	for (i = 0; i < positionUpdateQueueCount; i++) {
+  21:src/AX12.c    **** 		// If disabled do not check anything. `0` means don't check!
+  22:src/AX12.c    **** 		if (likely(positionUpdateQueue[i].updatePeriodMs == 0)) {
+  23:src/AX12.c    **** 			continue;
+  24:src/AX12.c    **** 		}
+  25:src/AX12.c    **** 
+  26:src/AX12.c    **** 		if (Utils_Mills() > positionUpdateQueue[i].lastUpdate + positionUpdateQueue[i].updatePeriodMs) {
+  27:src/AX12.c    **** 			uint8_t status;
+  28:src/AX12.c    **** 			uint16_t value;
+  29:src/AX12.c    **** 
+  30:src/AX12.c    **** 			positionUpdateQueue[i].lastUpdate = Utils_Mills();
+  31:src/AX12.c    **** 
+  32:src/AX12.c    **** 			status = dynamixel_readword(
+  33:src/AX12.c    **** 				positionUpdateQueue[i].id,
+  34:src/AX12.c    **** 				AX_PRESENT_POSITION_L,
+  35:src/AX12.c    **** 				&value
+  36:src/AX12.c    **** 			);
+  37:src/AX12.c    **** 
+  38:src/AX12.c    **** 			if (abs(value - positionUpdateQueue[i].requiredPosition) <= positionUpdateQueue[i].tolerance) {
+  39:src/AX12.c    **** 				// TODO: Send response
+  40:src/AX12.c    **** 			}
+  41:src/AX12.c    **** 		}
+  42:src/AX12.c    **** 	}
+  43:src/AX12.c    **** 	*/
+  44:src/AX12.c    **** }
+  45:src/AX12.c    **** 
+  46:src/AX12.c    **** void AX12_InitAll() {
+  30               		.loc 1 46 0
+  31               		.cfi_startproc
+  32               	/* prologue: function */
+  33               	/* frame size = 0 */
+  34               	/* stack size = 0 */
+  35               	.L__stack_usage = 0
+  47:src/AX12.c    **** 	dynamixel_ax_init();
+  36               		.loc 1 47 0
+  37 0002 0C94 0000 		jmp dynamixel_ax_init
+  38               	.LVL0:
+  39               		.cfi_endproc
+  40               	.LFE8:
+  42               	.global	AX12_OnMessage
+  44               	AX12_OnMessage:
+  45               	.LFB9:
+  48:src/AX12.c    **** }
+  49:src/AX12.c    **** 
+  50:src/AX12.c    **** bool AX12_OnMessage(can_t* canMsg) {
+  46               		.loc 1 50 0
+  47               		.cfi_startproc
+  48               	.LVL1:
+  49 0006 CF92      		push r12
+  50               	.LCFI0:
+  51               		.cfi_def_cfa_offset 3
+  52               		.cfi_offset 12, -2
+  53 0008 DF92      		push r13
+  54               	.LCFI1:
+  55               		.cfi_def_cfa_offset 4
+  56               		.cfi_offset 13, -3
+  57 000a EF92      		push r14
+  58               	.LCFI2:
+  59               		.cfi_def_cfa_offset 5
+  60               		.cfi_offset 14, -4
+  61 000c FF92      		push r15
+  62               	.LCFI3:
+  63               		.cfi_def_cfa_offset 6
+  64               		.cfi_offset 15, -5
+  65 000e 0F93      		push r16
+  66               	.LCFI4:
+  67               		.cfi_def_cfa_offset 7
+  68               		.cfi_offset 16, -6
+  69 0010 1F93      		push r17
+  70               	.LCFI5:
+  71               		.cfi_def_cfa_offset 8
+  72               		.cfi_offset 17, -7
+  73 0012 CF93      		push r28
+  74               	.LCFI6:
+  75               		.cfi_def_cfa_offset 9
+  76               		.cfi_offset 28, -8
+  77 0014 DF93      		push r29
+  78               	.LCFI7:
+  79               		.cfi_def_cfa_offset 10
+  80               		.cfi_offset 29, -9
+  81 0016 CDB7      		in r28,__SP_L__
+  82 0018 DEB7      		in r29,__SP_H__
+  83               	.LCFI8:
+  84               		.cfi_def_cfa_register 28
+  85 001a A497      		sbiw r28,36
+  86               	.LCFI9:
+  87               		.cfi_def_cfa_offset 46
+  88 001c 0FB6      		in __tmp_reg__,__SREG__
+  89 001e F894      		cli
+  90 0020 DEBF      		out __SP_H__,r29
+  91 0022 0FBE      		out __SREG__,__tmp_reg__
+  92 0024 CDBF      		out __SP_L__,r28
+  93               	/* prologue: function */
+  94               	/* frame size = 36 */
+  95               	/* stack size = 44 */
+  96               	.L__stack_usage = 44
+  51:src/AX12.c    **** 	if (unlikely(canMsg->id == AX12_CANID)) {
+  97               		.loc 1 51 0
+  98 0026 FC01      		movw r30,r24
+  99 0028 C080      		ld r12,Z
+ 100 002a D180      		ldd r13,Z+1
+ 101 002c E280      		ldd r14,Z+2
+ 102 002e F380      		ldd r15,Z+3
+ 103 0030 F0E7      		ldi r31,112
+ 104 0032 CF16      		cp r12,r31
+ 105 0034 FDE8      		ldi r31,-115
+ 106 0036 DF06      		cpc r13,r31
+ 107 0038 E104      		cpc r14,__zero_reg__
+ 108 003a F104      		cpc r15,__zero_reg__
+ 109 003c 01F4      		brne .L7
+ 110 003e 8C01      		movw r16,r24
+ 111               	.LBB2:
+  52:src/AX12.c    **** 		uint8_t txpacket[11];
+  53:src/AX12.c    **** 		uint8_t rxpacket[11];
+  54:src/AX12.c    **** 		uint8_t status;
+  55:src/AX12.c    **** 		uint8_t packetKernelLength;
+  56:src/AX12.c    **** 
+  57:src/AX12.c    **** 		// Send packet to AX12 (Brain -> AX12)
+  58:src/AX12.c    **** 		memcpy(txpacket + 2, canMsg->data, canMsg->length);
+ 112               		.loc 1 58 0
+ 113 0040 FC01      		movw r30,r24
+ 114 0042 4581      		ldd r20,Z+5
+ 115 0044 50E0      		ldi r21,0
+ 116 0046 BC01      		movw r22,r24
+ 117 0048 6A5F      		subi r22,-6
+ 118 004a 7F4F      		sbci r23,-1
+ 119 004c CE01      		movw r24,r28
+ 120               	.LVL2:
+ 121 004e 4C96      		adiw r24,28
+ 122 0050 0E94 0000 		call memcpy
+ 123               	.LVL3:
+  59:src/AX12.c    **** 		status = dynamixel_ax_txrx(txpacket, rxpacket);
+ 124               		.loc 1 59 0
+ 125 0054 BE01      		movw r22,r28
+ 126 0056 615F      		subi r22,-15
+ 127 0058 7F4F      		sbci r23,-1
+ 128 005a CE01      		movw r24,r28
+ 129 005c 4A96      		adiw r24,26
+ 130 005e 0E94 0000 		call dynamixel_ax_txrx
+ 131               	.LVL4:
+  60:src/AX12.c    **** 
+  61:src/AX12.c    **** 		// Get a response from AX12 (Brain <- AX12)
+  62:src/AX12.c    **** 		can_t msg;
+  63:src/AX12.c    **** 		msg.id = AX12_CANID;
+ 132               		.loc 1 63 0
+ 133 0062 C982      		std Y+1,r12
+ 134 0064 DA82      		std Y+2,r13
+ 135 0066 EB82      		std Y+3,r14
+ 136 0068 FC82      		std Y+4,r15
+  64:src/AX12.c    **** 		msg.flags.rtr = 0;
+ 137               		.loc 1 64 0
+ 138 006a 9D81      		ldd r25,Y+5
+  65:src/AX12.c    **** 		msg.flags.extended = 1;
+ 139               		.loc 1 65 0
+ 140 006c 9E7F      		andi r25,lo8(-2)
+ 141 006e 9260      		ori r25,lo8(1<<1)
+ 142 0070 9D83      		std Y+5,r25
+  66:src/AX12.c    **** 		if (status == DYNAMIXEL_SUCCESS) {
+ 143               		.loc 1 66 0
+ 144 0072 8130      		cpi r24,lo8(1)
+ 145 0074 01F4      		brne .L5
+  67:src/AX12.c    **** 			// Length + (1 Byte ID) + (1 Byte Lenght) - (1 Byte Checksum)
+  68:src/AX12.c    **** 			packetKernelLength = rxpacket[3] + 2 - 1;
+ 146               		.loc 1 68 0
+ 147 0076 1A89      		ldd r17,Y+18
+ 148 0078 1F5F      		subi r17,lo8(-(1))
+ 149               	.LVL5:
+  69:src/AX12.c    **** 			memcpy(msg.data, rxpacket + 2, packetKernelLength);
+ 150               		.loc 1 69 0
+ 151 007a 412F      		mov r20,r17
+ 152 007c 50E0      		ldi r21,0
+ 153 007e BE01      		movw r22,r28
+ 154 0080 6F5E      		subi r22,-17
+ 155 0082 7F4F      		sbci r23,-1
+ 156 0084 CE01      		movw r24,r28
+ 157               	.LVL6:
+ 158 0086 0796      		adiw r24,7
+ 159 0088 0E94 0000 		call memcpy
+ 160               	.LVL7:
+ 161 008c 00C0      		rjmp .L6
+ 162               	.LVL8:
+ 163               	.L5:
+  70:src/AX12.c    **** 		} else {
+  71:src/AX12.c    **** 			packetKernelLength = 2;
+  72:src/AX12.c    **** 			msg.data[0] = canMsg->data[0]; // ID
+ 164               		.loc 1 72 0
+ 165 008e F801      		movw r30,r16
+ 166 0090 9681      		ldd r25,Z+6
+ 167 0092 9F83      		std Y+7,r25
+  73:src/AX12.c    **** 			msg.data[1] = status;
+ 168               		.loc 1 73 0
+ 169 0094 8887      		std Y+8,r24
+  71:src/AX12.c    **** 			msg.data[0] = canMsg->data[0]; // ID
+ 170               		.loc 1 71 0
+ 171 0096 12E0      		ldi r17,lo8(2)
+ 172               	.LVL9:
+ 173               	.L6:
+  74:src/AX12.c    **** 		}
+  75:src/AX12.c    **** 		msg.length = packetKernelLength;
+ 174               		.loc 1 75 0
+ 175 0098 1E83      		std Y+6,r17
+  76:src/AX12.c    **** 		can_send_message(&msg);
+ 176               		.loc 1 76 0
+ 177 009a CE01      		movw r24,r28
+ 178 009c 0196      		adiw r24,1
+ 179 009e 0E94 0000 		call can_send_message
+ 180               	.LVL10:
+  77:src/AX12.c    **** 
+  78:src/AX12.c    **** 		return true;
+ 181               		.loc 1 78 0
+ 182 00a2 81E0      		ldi r24,lo8(1)
+ 183 00a4 00C0      		rjmp .L4
+ 184               	.LVL11:
+ 185               	.L7:
+ 186               	.LBE2:
+  79:src/AX12.c    **** 	}
+  80:src/AX12.c    **** 
+  81:src/AX12.c    **** 	return false;
+ 187               		.loc 1 81 0
+ 188 00a6 80E0      		ldi r24,0
+ 189               	.LVL12:
+ 190               	.L4:
+ 191               	/* epilogue start */
+  82:src/AX12.c    **** }
+ 192               		.loc 1 82 0 discriminator 1
+ 193 00a8 A496      		adiw r28,36
+ 194 00aa 0FB6      		in __tmp_reg__,__SREG__
+ 195 00ac F894      		cli
+ 196 00ae DEBF      		out __SP_H__,r29
+ 197 00b0 0FBE      		out __SREG__,__tmp_reg__
+ 198 00b2 CDBF      		out __SP_L__,r28
+ 199 00b4 DF91      		pop r29
+ 200 00b6 CF91      		pop r28
+ 201 00b8 1F91      		pop r17
+ 202 00ba 0F91      		pop r16
+ 203 00bc FF90      		pop r15
+ 204 00be EF90      		pop r14
+ 205 00c0 DF90      		pop r13
+ 206 00c2 CF90      		pop r12
+ 207 00c4 0895      		ret
+ 208               		.cfi_endproc
+ 209               	.LFE9:
+ 211               	.Letext0:
+ 212               		.file 2 "/usr/lib/avr/include/stdint.h"
+ 213               		.file 3 "/usr/lib/gcc/avr/4.9.2/include/stddef.h"
+ 214               		.file 4 "./libs/can/can.h"
+ 215               		.file 5 "src/AX12.h"
+ 216               		.file 6 "./libs/dynamixel/dynamixel.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 AX12.c
+     /tmp/ccX1TzS1.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccX1TzS1.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccX1TzS1.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccX1TzS1.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/ccX1TzS1.s:6      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccX1TzS1.s:7      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccX1TzS1.s:13     .text:0000000000000000 AX12_UpdateAll
+     /tmp/ccX1TzS1.s:28     .text:0000000000000002 AX12_InitAll
+     /tmp/ccX1TzS1.s:44     .text:0000000000000006 AX12_OnMessage
+
+UNDEFINED SYMBOLS
+dynamixel_ax_init
+memcpy
+dynamixel_ax_txrx
+can_send_message

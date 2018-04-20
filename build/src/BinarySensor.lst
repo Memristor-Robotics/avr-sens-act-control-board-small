@@ -1,0 +1,309 @@
+   1               		.file	"BinarySensor.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__RAMPZ__ = 0x3b
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   8               		.text
+   9               	.Ltext0:
+  10               		.cfi_sections	.debug_frame
+  11               	.global	BinarySensor_Add
+  13               	BinarySensor_Add:
+  14               	.LFB5:
+  15               		.file 1 "src/BinarySensor.c"
+   1:src/BinarySensor.c **** #include "BinarySensor.h"
+   2:src/BinarySensor.c **** 
+   3:src/BinarySensor.c **** static BinarySensor instances[BINARY_SENSOR_CONFIG_MAX];
+   4:src/BinarySensor.c **** static uint8_t instancesCount = 0;
+   5:src/BinarySensor.c **** 
+   6:src/BinarySensor.c **** void BinarySensor_Add(Pin* pin, uint8_t number) {
+  16               		.loc 1 6 0
+  17               		.cfi_startproc
+  18               	.LVL0:
+  19 0000 0F93      		push r16
+  20               	.LCFI0:
+  21               		.cfi_def_cfa_offset 3
+  22               		.cfi_offset 16, -2
+  23 0002 1F93      		push r17
+  24               	.LCFI1:
+  25               		.cfi_def_cfa_offset 4
+  26               		.cfi_offset 17, -3
+  27 0004 CF93      		push r28
+  28               	.LCFI2:
+  29               		.cfi_def_cfa_offset 5
+  30               		.cfi_offset 28, -4
+  31 0006 DF93      		push r29
+  32               	.LCFI3:
+  33               		.cfi_def_cfa_offset 6
+  34               		.cfi_offset 29, -5
+  35               	/* prologue: function */
+  36               	/* frame size = 0 */
+  37               	/* stack size = 4 */
+  38               	.L__stack_usage = 4
+  39 0008 8C01      		movw r16,r24
+  40 000a D62F      		mov r29,r22
+   7:src/BinarySensor.c **** 	uint8_t index = instancesCount;
+  41               		.loc 1 7 0
+  42 000c C091 0000 		lds r28,instancesCount
+  43               	.LVL1:
+   8:src/BinarySensor.c **** 
+   9:src/BinarySensor.c **** 	// Set mode
+  10:src/BinarySensor.c ****     Pin_SetMode(pin, PIN_INPUT);
+  44               		.loc 1 10 0
+  45 0010 60E0      		ldi r22,0
+  46               	.LVL2:
+  47 0012 0E94 0000 		call Pin_SetMode
+  48               	.LVL3:
+  11:src/BinarySensor.c **** 
+  12:src/BinarySensor.c ****     // Initialize values
+  13:src/BinarySensor.c ****     instances[index].canId = BINARY_SENSOR_CANID + number;
+  49               		.loc 1 13 0
+  50 0016 85E0      		ldi r24,lo8(5)
+  51 0018 C89F      		mul r28,r24
+  52 001a F001      		movw r30,r0
+  53 001c 1124      		clr __zero_reg__
+  54 001e E050      		subi r30,lo8(-(instances))
+  55 0020 F040      		sbci r31,hi8(-(instances))
+  56 0022 6D2F      		mov r22,r29
+  57 0024 70E0      		ldi r23,0
+  58 0026 605F      		subi r22,-16
+  59 0028 7247      		sbci r23,114
+  60 002a 7383      		std Z+3,r23
+  61 002c 6283      		std Z+2,r22
+  14:src/BinarySensor.c ****     instances[index].pin = pin;
+  62               		.loc 1 14 0
+  63 002e 1183      		std Z+1,r17
+  64 0030 0083      		st Z,r16
+  15:src/BinarySensor.c ****     instances[index].state = 0;
+  65               		.loc 1 15 0
+  66 0032 1482      		std Z+4,__zero_reg__
+  16:src/BinarySensor.c **** 
+  17:src/BinarySensor.c ****     // Return index
+  18:src/BinarySensor.c ****     instancesCount++;
+  67               		.loc 1 18 0
+  68 0034 8091 0000 		lds r24,instancesCount
+  69 0038 8F5F      		subi r24,lo8(-(1))
+  70 003a 8093 0000 		sts instancesCount,r24
+  71               	/* epilogue start */
+  19:src/BinarySensor.c **** }
+  72               		.loc 1 19 0
+  73 003e DF91      		pop r29
+  74               	.LVL4:
+  75 0040 CF91      		pop r28
+  76               	.LVL5:
+  77 0042 1F91      		pop r17
+  78 0044 0F91      		pop r16
+  79               	.LVL6:
+  80 0046 0895      		ret
+  81               		.cfi_endproc
+  82               	.LFE5:
+  84               	.global	BinarySensor_UpdateAll
+  86               	BinarySensor_UpdateAll:
+  87               	.LFB6:
+  20:src/BinarySensor.c **** 
+  21:src/BinarySensor.c **** inline void BinarySensor_UpdateAll(void) {
+  88               		.loc 1 21 0
+  89               		.cfi_startproc
+  90 0048 EF92      		push r14
+  91               	.LCFI4:
+  92               		.cfi_def_cfa_offset 3
+  93               		.cfi_offset 14, -2
+  94 004a FF92      		push r15
+  95               	.LCFI5:
+  96               		.cfi_def_cfa_offset 4
+  97               		.cfi_offset 15, -3
+  98 004c 0F93      		push r16
+  99               	.LCFI6:
+ 100               		.cfi_def_cfa_offset 5
+ 101               		.cfi_offset 16, -4
+ 102 004e 1F93      		push r17
+ 103               	.LCFI7:
+ 104               		.cfi_def_cfa_offset 6
+ 105               		.cfi_offset 17, -5
+ 106 0050 CF93      		push r28
+ 107               	.LCFI8:
+ 108               		.cfi_def_cfa_offset 7
+ 109               		.cfi_offset 28, -6
+ 110 0052 DF93      		push r29
+ 111               	.LCFI9:
+ 112               		.cfi_def_cfa_offset 8
+ 113               		.cfi_offset 29, -7
+ 114               	/* prologue: function */
+ 115               	/* frame size = 0 */
+ 116               	/* stack size = 6 */
+ 117               	.L__stack_usage = 6
+ 118 0054 00E0      		ldi r16,lo8(instances+4)
+ 119 0056 10E0      		ldi r17,hi8(instances+4)
+ 120 0058 C0E0      		ldi r28,lo8(instances)
+ 121 005a D0E0      		ldi r29,hi8(instances)
+  22:src/BinarySensor.c **** 	size_t i;
+  23:src/BinarySensor.c **** 	for (i = 0; i < instancesCount; i++) {
+ 122               		.loc 1 23 0
+ 123 005c E12C      		mov r14,__zero_reg__
+ 124 005e F12C      		mov r15,__zero_reg__
+ 125               	.L3:
+ 126               		.loc 1 23 0 is_stmt 0 discriminator 1
+ 127 0060 8091 0000 		lds r24,instancesCount
+ 128 0064 90E0      		ldi r25,0
+ 129 0066 E816      		cp r14,r24
+ 130 0068 F906      		cpc r15,r25
+ 131 006a 00F0      		brlo .+2
+ 132 006c 00C0      		rjmp .L8
+  24:src/BinarySensor.c **** 		if (Pin_ReadDigital(instances[i].pin) == PIN_HIGH && instances[i].state == 0) {
+ 133               		.loc 1 24 0 is_stmt 1
+ 134 006e 8881      		ld r24,Y
+ 135 0070 9981      		ldd r25,Y+1
+ 136 0072 0E94 0000 		call Pin_ReadDigital
+ 137 0076 8130      		cpi r24,lo8(1)
+ 138 0078 01F4      		brne .L4
+ 139               		.loc 1 24 0 is_stmt 0 discriminator 1
+ 140 007a F801      		movw r30,r16
+ 141 007c 9081      		ld r25,Z
+ 142 007e 9111      		cpse r25,__zero_reg__
+ 143 0080 00C0      		rjmp .L4
+  25:src/BinarySensor.c **** 			instances[i].state = 1;
+ 144               		.loc 1 25 0 is_stmt 1
+ 145 0082 8083      		st Z,r24
+  26:src/BinarySensor.c **** 			can_wrapper_send(instances[i].canId, 1, instances[i].state);
+ 146               		.loc 1 26 0
+ 147 0084 1F92      		push __zero_reg__
+ 148               	.LCFI10:
+ 149               		.cfi_def_cfa_offset 9
+ 150 0086 8F93      		push r24
+ 151               	.LCFI11:
+ 152               		.cfi_def_cfa_offset 10
+ 153 0088 8F93      		push r24
+ 154               	.LCFI12:
+ 155               		.cfi_def_cfa_offset 11
+ 156 008a 8A81      		ldd r24,Y+2
+ 157 008c 9B81      		ldd r25,Y+3
+ 158 008e 1F92      		push __zero_reg__
+ 159               	.LCFI13:
+ 160               		.cfi_def_cfa_offset 12
+ 161 0090 1F92      		push __zero_reg__
+ 162               	.LCFI14:
+ 163               		.cfi_def_cfa_offset 13
+ 164 0092 9F93      		push r25
+ 165               	.LCFI15:
+ 166               		.cfi_def_cfa_offset 14
+ 167 0094 8F93      		push r24
+ 168               	.LCFI16:
+ 169               		.cfi_def_cfa_offset 15
+ 170 0096 0E94 0000 		call can_wrapper_send
+ 171 009a 8DB7      		in r24,__SP_L__
+ 172 009c 9EB7      		in r25,__SP_H__
+ 173 009e 0796      		adiw r24,7
+ 174 00a0 0FB6      		in __tmp_reg__,__SREG__
+ 175 00a2 F894      		cli
+ 176 00a4 9EBF      		out __SP_H__,r25
+ 177 00a6 0FBE      		out __SREG__,__tmp_reg__
+ 178 00a8 8DBF      		out __SP_L__,r24
+ 179               	.LCFI17:
+ 180               		.cfi_def_cfa_offset 8
+ 181 00aa 00C0      		rjmp .L5
+ 182               	.L4:
+  27:src/BinarySensor.c **** 		}
+  28:src/BinarySensor.c **** 		else if (Pin_ReadDigital(instances[i].pin) == PIN_LOW && instances[i].state == 1) {
+ 183               		.loc 1 28 0
+ 184 00ac 8881      		ld r24,Y
+ 185 00ae 9981      		ldd r25,Y+1
+ 186 00b0 0E94 0000 		call Pin_ReadDigital
+ 187 00b4 8111      		cpse r24,__zero_reg__
+ 188 00b6 00C0      		rjmp .L5
+ 189               		.loc 1 28 0 is_stmt 0 discriminator 1
+ 190 00b8 F801      		movw r30,r16
+ 191 00ba 8081      		ld r24,Z
+ 192 00bc 8130      		cpi r24,lo8(1)
+ 193 00be 01F4      		brne .L5
+  29:src/BinarySensor.c **** 			instances[i].state = 0;
+ 194               		.loc 1 29 0 is_stmt 1
+ 195 00c0 1082      		st Z,__zero_reg__
+  30:src/BinarySensor.c **** 			can_wrapper_send(instances[i].canId, 1, instances[i].state);
+ 196               		.loc 1 30 0
+ 197 00c2 1F92      		push __zero_reg__
+ 198               	.LCFI18:
+ 199               		.cfi_def_cfa_offset 9
+ 200 00c4 1F92      		push __zero_reg__
+ 201               	.LCFI19:
+ 202               		.cfi_def_cfa_offset 10
+ 203 00c6 8F93      		push r24
+ 204               	.LCFI20:
+ 205               		.cfi_def_cfa_offset 11
+ 206 00c8 8A81      		ldd r24,Y+2
+ 207 00ca 9B81      		ldd r25,Y+3
+ 208 00cc 1F92      		push __zero_reg__
+ 209               	.LCFI21:
+ 210               		.cfi_def_cfa_offset 12
+ 211 00ce 1F92      		push __zero_reg__
+ 212               	.LCFI22:
+ 213               		.cfi_def_cfa_offset 13
+ 214 00d0 9F93      		push r25
+ 215               	.LCFI23:
+ 216               		.cfi_def_cfa_offset 14
+ 217 00d2 8F93      		push r24
+ 218               	.LCFI24:
+ 219               		.cfi_def_cfa_offset 15
+ 220 00d4 0E94 0000 		call can_wrapper_send
+ 221 00d8 8DB7      		in r24,__SP_L__
+ 222 00da 9EB7      		in r25,__SP_H__
+ 223 00dc 0796      		adiw r24,7
+ 224 00de 0FB6      		in __tmp_reg__,__SREG__
+ 225 00e0 F894      		cli
+ 226 00e2 9EBF      		out __SP_H__,r25
+ 227 00e4 0FBE      		out __SREG__,__tmp_reg__
+ 228 00e6 8DBF      		out __SP_L__,r24
+ 229               	.LCFI25:
+ 230               		.cfi_def_cfa_offset 8
+ 231               	.L5:
+  23:src/BinarySensor.c **** 		if (Pin_ReadDigital(instances[i].pin) == PIN_HIGH && instances[i].state == 0) {
+ 232               		.loc 1 23 0 discriminator 2
+ 233 00e8 9FEF      		ldi r25,-1
+ 234 00ea E91A      		sub r14,r25
+ 235 00ec F90A      		sbc r15,r25
+ 236 00ee 0B5F      		subi r16,-5
+ 237 00f0 1F4F      		sbci r17,-1
+ 238 00f2 2596      		adiw r28,5
+ 239 00f4 00C0      		rjmp .L3
+ 240               	.L8:
+ 241               	/* epilogue start */
+  31:src/BinarySensor.c **** 		}
+  32:src/BinarySensor.c **** 	}
+  33:src/BinarySensor.c **** }
+ 242               		.loc 1 33 0
+ 243 00f6 DF91      		pop r29
+ 244 00f8 CF91      		pop r28
+ 245 00fa 1F91      		pop r17
+ 246 00fc 0F91      		pop r16
+ 247 00fe FF90      		pop r15
+ 248 0100 EF90      		pop r14
+ 249 0102 0895      		ret
+ 250               		.cfi_endproc
+ 251               	.LFE6:
+ 253               		.local	instancesCount
+ 254               		.comm	instancesCount,1,1
+ 255               		.local	instances
+ 256               		.comm	instances,50,1
+ 257               	.Letext0:
+ 258               		.file 2 "/usr/lib/avr/include/stdint.h"
+ 259               		.file 3 "/usr/lib/gcc/avr/4.9.2/include/stddef.h"
+ 260               		.file 4 "src/Pin.h"
+ 261               		.file 5 "src/BinarySensor.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 BinarySensor.c
+     /tmp/ccgljBfZ.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccgljBfZ.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccgljBfZ.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccgljBfZ.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/ccgljBfZ.s:6      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccgljBfZ.s:7      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccgljBfZ.s:13     .text:0000000000000000 BinarySensor_Add
+                             .bss:0000000000000000 instancesCount
+     /tmp/ccgljBfZ.s:254    .bss:0000000000000001 instances
+     /tmp/ccgljBfZ.s:86     .text:0000000000000048 BinarySensor_UpdateAll
+
+UNDEFINED SYMBOLS
+Pin_SetMode
+Pin_ReadDigital
+can_wrapper_send
+__do_clear_bss

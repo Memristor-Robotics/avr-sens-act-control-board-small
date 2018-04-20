@@ -28,18 +28,17 @@ int main() {
 	BinarySensor_Add(&Pin_C6, 1);
 	BinarySensor_Add(&Pin_C7, 2);
 	BinarySensor_Add(&Pin_A7, 3);
-
+	BinarySensor_Add(&Pin_A6, 4);
 
 	/* Brushless EDF Initialisation on pin */
-	Brushless_Init(&Pin_B5);
+	//Brushless_Init(&Pin_B5);
 
 
 	/* CANbus Initialisation */
 	CANbus_Init();
 
-
 #ifdef DEBUG
-	/* ALL Initialisations Passed and UART sends 'k' */
+	/* ALL Initialisations Passed and UART sends 	'k' */
 	USART0_transmit('k');
 #endif
 
@@ -52,7 +51,6 @@ int main() {
 
 			if (can_get_message(&msg)) {
 
-				Brushless_Update(&msg);
 				if(AX12_OnMessage(&msg) == true) continue;
 
 			}
