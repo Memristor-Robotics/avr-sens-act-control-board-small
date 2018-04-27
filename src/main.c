@@ -26,12 +26,15 @@ int main() {
 
 	/*	Binary Sensors Initalisation	*/
 	BinarySensor_Add(&Pin_C6, 1);
-	BinarySensor_Add(&Pin_C7, 2);
-	BinarySensor_Add(&Pin_A7, 3);
-	BinarySensor_Add(&Pin_A6, 4);
+	BinarySensor_Add(&Pin_A2, 2);
+	BinarySensor_Add(&Pin_A3, 3);
+	BinarySensor_Add(&Pin_A4, 4);
+	BinarySensor_Add(&Pin_A5, 5);
+	BinarySensor_Add(&Pin_A6, 6);
+	BinarySensor_Add(&Pin_A7, 7);
 
 	/* Brushless EDF Initialisation on pin */
-	//Brushless_Init(&Pin_B5);
+	Brushless_Init(&Pin_B5);
 
 
 	/* CANbus Initialisation */
@@ -50,7 +53,7 @@ int main() {
 			can_t msg;
 
 			if (can_get_message(&msg)) {
-
+				if(Brushless_OnMessage(&msg) == true) continue;
 				if(AX12_OnMessage(&msg) == true) continue;
 
 			}
